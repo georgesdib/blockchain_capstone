@@ -1,12 +1,16 @@
-pragma solidity ^0.5.0;
+//SPDX-License-Identifier: MIT
+pragma solidity 0.8.6;
 
 import 'openzeppelin-solidity/contracts/utils/Address.sol';
-import 'openzeppelin-solidity/contracts/drafts/Counters.sol';
-import 'openzeppelin-solidity/contracts/math/SafeMath.sol';
+import 'openzeppelin-solidity/contracts/utils/Counters.sol';
+import 'openzeppelin-solidity/contracts/security/Pausable.sol';
 import 'openzeppelin-solidity/contracts/token/ERC721/IERC721Receiver.sol';
 import "./Oraclize.sol";
 
 contract Ownable {
+    address private _owner;
+
+    event OwnershipTransferred(address oldOwner, address newOnwer);
     //  TODO's
     //  1) create a private '_owner' variable of type address with a public getter function
     //  2) create an internal constructor that sets the _owner var to the creater of the contract 
@@ -14,10 +18,26 @@ contract Ownable {
     //  4) fill out the transferOwnership function
     //  5) create an event that emits anytime ownerShip is transfered (including in the constructor)
 
+    constructor() {
+        _owner = msg.sender;
+    }
+
+    modifier onlyOwner() {
+        require(msg.sender == _owner, "Only owner can call this");
+        _;
+    }
+
+    function getOwner() public view returns(address) {
+        return _owner;
+    }
     function transferOwnership(address newOwner) public onlyOwner {
         // TODO add functionality to transfer control of the contract to a newOwner.
         // make sure the new owner is a real address
+        require(newOwner != address(0), "Cannot set to the null address");
+        address oldOwner = _owner;
+        _owner = newOwner;
 
+        emit OwnershipTransferred(oldOwner, newOwner);
     }
 }
 
@@ -72,7 +92,6 @@ contract ERC721 is Pausable, ERC165 {
 
     event ApprovalForAll(address indexed owner, address indexed operator, bool approved);
     
-    using SafeMath for uint256;
     using Address for address;
     using Counters for Counters.Counter;
 
@@ -97,7 +116,7 @@ contract ERC721 is Pausable, ERC165 {
 
     bytes4 private constant _INTERFACE_ID_ERC721 = 0x80ac58cd;
 
-    constructor () public {
+    constructor () {
         // register the supported interfaces to conform to ERC721 via ERC165
         _registerInterface(_INTERFACE_ID_ERC721);
     }
@@ -265,7 +284,7 @@ contract ERC721Enumerable is ERC165, ERC721 {
     /**
      * @dev Constructor function
      */
-    constructor () public {
+    constructor () {
         // register the supported interface to conform to ERC721Enumerable via ERC165
         _registerInterface(_INTERFACE_ID_ERC721_ENUMERABLE);
     }
@@ -428,7 +447,7 @@ contract ERC721Metadata is ERC721Enumerable, usingOraclize {
      */
 
 
-    constructor (string memory name, string memory symbol, string memory baseTokenURI) public {
+    constructor (string memory name, string memory symbol, string memory baseTokenURI) {
         // TODO: set instance var values
 
         _registerInterface(_INTERFACE_ID_ERC721_METADATA);
