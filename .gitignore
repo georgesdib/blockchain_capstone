@@ -8,3 +8,4 @@ zokrates/code/square/verification.key
 zokrates/code/square/verifier.sol
 zokrates/code/square/witness
 node_modules
+build

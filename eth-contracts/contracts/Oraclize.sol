@@ -28,29 +28,30 @@ THE SOFTWARE.
 pragma solidity 0.8.6;
 
 // Dummy contract only used to emit to end-user they are using wrong solc
-contract solcChecker {
-/* INCOMPATIBLE SOLC: import the following instead: "github.com/oraclize/ethereum-api/oraclizeAPI_0.4.sol" */ function f(bytes calldata x) external;
+abstract contract solcChecker {
+    /* INCOMPATIBLE SOLC: import the following instead: "github.com/oraclize/ethereum-api/oraclizeAPI_0.4.sol" */
+    function f(bytes calldata x) external virtual;
 }
 
-contract OraclizeI {
+abstract contract OraclizeI {
 
     address public cbAddress;
 
-    function setProofType(bytes1 _proofType) external;
-    function setCustomGasPrice(uint _gasPrice) external;
-    function getPrice(string memory _datasource) public returns (uint _dsprice);
-    function randomDS_getSessionPubKeyHash() external view returns (bytes32 _sessionKeyHash);
-    function getPrice(string memory _datasource, uint _gasLimit) public returns (uint _dsprice);
-    function queryN(uint _timestamp, string memory _datasource, bytes memory _argN) public payable returns (bytes32 _id);
-    function query(uint _timestamp, string calldata _datasource, string calldata _arg) external payable returns (bytes32 _id);
-    function query2(uint _timestamp, string memory _datasource, string memory _arg1, string memory _arg2) public payable returns (bytes32 _id);
-    function query_withGasLimit(uint _timestamp, string calldata _datasource, string calldata _arg, uint _gasLimit) external payable returns (bytes32 _id);
-    function queryN_withGasLimit(uint _timestamp, string calldata _datasource, bytes calldata _argN, uint _gasLimit) external payable returns (bytes32 _id);
-    function query2_withGasLimit(uint _timestamp, string calldata _datasource, string calldata _arg1, string calldata _arg2, uint _gasLimit) external payable returns (bytes32 _id);
+    function setProofType(bytes1 _proofType) external virtual;
+    function setCustomGasPrice(uint _gasPrice) external virtual;
+    function getPrice(string memory _datasource) public virtual returns (uint _dsprice);
+    function randomDS_getSessionPubKeyHash() external virtual view returns (bytes32 _sessionKeyHash);
+    function getPrice(string memory _datasource, uint _gasLimit) public virtual returns (uint _dsprice);
+    function queryN(uint _timestamp, string memory _datasource, bytes memory _argN) public payable virtual returns (bytes32 _id);
+    function query(uint _timestamp, string calldata _datasource, string calldata _arg) external payable virtual returns (bytes32 _id);
+    function query2(uint _timestamp, string memory _datasource, string memory _arg1, string memory _arg2) public payable virtual returns (bytes32 _id);
+    function query_withGasLimit(uint _timestamp, string calldata _datasource, string calldata _arg, uint _gasLimit) external payable virtual returns (bytes32 _id);
+    function queryN_withGasLimit(uint _timestamp, string calldata _datasource, bytes calldata _argN, uint _gasLimit) external payable virtual returns (bytes32 _id);
+    function query2_withGasLimit(uint _timestamp, string calldata _datasource, string calldata _arg1, string calldata _arg2, uint _gasLimit) external payable virtual returns (bytes32 _id);
 }
 
-contract OraclizeAddrResolverI {
-    function getAddress() public returns (address _address);
+abstract contract OraclizeAddrResolverI {
+    function getAddress() public virtual returns (address _address);
 }
 /*
 
@@ -114,12 +115,13 @@ library Buffer {
         }
         return _b;
     }
+
     /**
       * @dev Appends a byte array to the end of the buffer. Resizes if doing so
       *      would exceed the capacity of the buffer.
       * @param _buf The buffer to append to.
       * @param _data The data to append.
-      * @return The original buffer.
+      * @return _buffer The original buffer.
       *
       */
     function append(buffer memory _buf, bytes memory _data) internal pure returns (buffer memory _buffer) {
@@ -151,13 +153,13 @@ library Buffer {
         }
         return _buf;
     }
+
     /**
       *
       * @dev Appends a byte to the end of the buffer. Resizes if doing so would
       * exceed the capacity of the buffer.
       * @param _buf The buffer to append to.
       * @param _data The data to append.
-      * @return The original buffer.
       *
       */
     function append(buffer memory _buf, uint8 _data) internal pure {
@@ -172,13 +174,14 @@ library Buffer {
             mstore(bufptr, add(buflen, 1)) // Update buffer length
         }
     }
+
     /**
       *
       * @dev Appends a byte to the end of the buffer. Resizes if doing so would
       * exceed the capacity of the buffer.
       * @param _buf The buffer to append to.
       * @param _data The data to append.
-      * @return The original buffer.
+      * @return _buffer The original buffer.
       *
       */
     function appendInt(buffer memory _buf, uint _data, uint _len) internal pure returns (buffer memory _buffer) {
@@ -318,7 +321,6 @@ contract usingOraclize {
 
     function oraclize_setNetwork(uint8 _networkID) internal returns (bool _networkSet) {
       return oraclize_setNetwork();
-      _networkID; // silence the warning and remain backwards compatible
     }
 
     function oraclize_setNetworkName(string memory _network_name) internal {
@@ -369,9 +371,8 @@ contract usingOraclize {
         __callback(_myid, _result, new bytes(0));
     }
 
-    function __callback(bytes32 _myid, string memory _result, bytes memory _proof) public {
+    function __callback(bytes32 _myid, string memory _result, bytes memory _proof) public pure {
       return;
-      _myid; _result; _proof; // Silence compiler warnings
     }
 
     function oraclize_getPrice(string memory _datasource) oraclizeAPI internal returns (uint _queryPrice) {
@@ -387,7 +388,7 @@ contract usingOraclize {
         if (price > 1 ether + tx.gasprice * 200000) {
             return 0; // Unexpectedly high price
         }
-        return oraclize.query.value(price)(0, _datasource, _arg);
+        return oraclize.query{value: price}(0, _datasource, _arg);
     }
 
     function oraclize_query(uint _timestamp, string memory _datasource, string memory _arg) oraclizeAPI internal returns (bytes32 _id) {
@@ -395,7 +396,7 @@ contract usingOraclize {
         if (price > 1 ether + tx.gasprice * 200000) {
             return 0; // Unexpectedly high price
         }
-        return oraclize.query.value(price)(_timestamp, _datasource, _arg);
+        return oraclize.query{value: price}(_timestamp, _datasource, _arg);
     }
 
     function oraclize_query(uint _timestamp, string memory _datasource, string memory _arg, uint _gasLimit) oraclizeAPI internal returns (bytes32 _id) {
@@ -403,7 +404,7 @@ contract usingOraclize {
         if (price > 1 ether + tx.gasprice * _gasLimit) {
             return 0; // Unexpectedly high price
         }
-        return oraclize.query_withGasLimit.value(price)(_timestamp, _datasource, _arg, _gasLimit);
+        return oraclize.query_withGasLimit{value: price}(_timestamp, _datasource, _arg, _gasLimit);
     }
 
     function oraclize_query(string memory _datasource, string memory _arg, uint _gasLimit) oraclizeAPI internal returns (bytes32 _id) {
@@ -411,7 +412,7 @@ contract usingOraclize {
         if (price > 1 ether + tx.gasprice * _gasLimit) {
            return 0; // Unexpectedly high price
         }
-        return oraclize.query_withGasLimit.value(price)(0, _datasource, _arg, _gasLimit);
+        return oraclize.query_withGasLimit{value: price}(0, _datasource, _arg, _gasLimit);
     }
 
     function oraclize_query(string memory _datasource, string memory _arg1, string memory _arg2) oraclizeAPI internal returns (bytes32 _id) {
@@ -419,7 +420,7 @@ contract usingOraclize {
         if (price > 1 ether + tx.gasprice * 200000) {
             return 0; // Unexpectedly high price
         }
-        return oraclize.query2.value(price)(0, _datasource, _arg1, _arg2);
+        return oraclize.query2{value: price}(0, _datasource, _arg1, _arg2);
     }
 
     function oraclize_query(uint _timestamp, string memory _datasource, string memory _arg1, string memory _arg2) oraclizeAPI internal returns (bytes32 _id) {
@@ -427,7 +428,7 @@ contract usingOraclize {
         if (price > 1 ether + tx.gasprice * 200000) {
             return 0; // Unexpectedly high price
         }
-        return oraclize.query2.value(price)(_timestamp, _datasource, _arg1, _arg2);
+        return oraclize.query2{value: price}(_timestamp, _datasource, _arg1, _arg2);
     }
 
     function oraclize_query(uint _timestamp, string memory _datasource, string memory _arg1, string memory _arg2, uint _gasLimit) oraclizeAPI internal returns (bytes32 _id) {
@@ -435,7 +436,7 @@ contract usingOraclize {
         if (price > 1 ether + tx.gasprice * _gasLimit) {
             return 0; // Unexpectedly high price
         }
-        return oraclize.query2_withGasLimit.value(price)(_timestamp, _datasource, _arg1, _arg2, _gasLimit);
+        return oraclize.query2_withGasLimit{value: price}(_timestamp, _datasource, _arg1, _arg2, _gasLimit);
     }
 
     function oraclize_query(string memory _datasource, string memory _arg1, string memory _arg2, uint _gasLimit) oraclizeAPI internal returns (bytes32 _id) {
@@ -443,7 +444,7 @@ contract usingOraclize {
         if (price > 1 ether + tx.gasprice * _gasLimit) {
             return 0; // Unexpectedly high price
         }
-        return oraclize.query2_withGasLimit.value(price)(0, _datasource, _arg1, _arg2, _gasLimit);
+        return oraclize.query2_withGasLimit{value: price}(0, _datasource, _arg1, _arg2, _gasLimit);
     }
 
     function oraclize_query(string memory _datasource, string[] memory _argN) oraclizeAPI internal returns (bytes32 _id) {
@@ -452,7 +453,7 @@ contract usingOraclize {
             return 0; // Unexpectedly high price
         }
         bytes memory args = stra2cbor(_argN);
-        return oraclize.queryN.value(price)(0, _datasource, args);
+        return oraclize.queryN{value: price}(0, _datasource, args);
     }
 
     function oraclize_query(uint _timestamp, string memory _datasource, string[] memory _argN) oraclizeAPI internal returns (bytes32 _id) {
@@ -461,7 +462,7 @@ contract usingOraclize {
             return 0; // Unexpectedly high price
         }
         bytes memory args = stra2cbor(_argN);
-        return oraclize.queryN.value(price)(_timestamp, _datasource, args);
+        return oraclize.queryN{value: price}(_timestamp, _datasource, args);
     }
 
     function oraclize_query(uint _timestamp, string memory _datasource, string[] memory _argN, uint _gasLimit) oraclizeAPI internal returns (bytes32 _id) {
@@ -470,7 +471,7 @@ contract usingOraclize {
             return 0; // Unexpectedly high price
         }
         bytes memory args = stra2cbor(_argN);
-        return oraclize.queryN_withGasLimit.value(price)(_timestamp, _datasource, args, _gasLimit);
+        return oraclize.queryN_withGasLimit{value: price}(_timestamp, _datasource, args, _gasLimit);
     }
 
     function oraclize_query(string memory _datasource, string[] memory _argN, uint _gasLimit) oraclizeAPI internal returns (bytes32 _id) {
@@ -479,7 +480,7 @@ contract usingOraclize {
             return 0; // Unexpectedly high price
         }
         bytes memory args = stra2cbor(_argN);
-        return oraclize.queryN_withGasLimit.value(price)(0, _datasource, args, _gasLimit);
+        return oraclize.queryN_withGasLimit{value: price}(0, _datasource, args, _gasLimit);
     }
 
     function oraclize_query(string memory _datasource, string[1] memory _args) oraclizeAPI internal returns (bytes32 _id) {
@@ -648,7 +649,7 @@ contract usingOraclize {
             return 0; // Unexpectedly high price
         }
         bytes memory args = ba2cbor(_argN);
-        return oraclize.queryN.value(price)(0, _datasource, args);
+        return oraclize.queryN{value: price}(0, _datasource, args);
     }
 
     function oraclize_query(uint _timestamp, string memory _datasource, bytes[] memory _argN) oraclizeAPI internal returns (bytes32 _id) {
@@ -657,7 +658,7 @@ contract usingOraclize {
             return 0; // Unexpectedly high price
         }
         bytes memory args = ba2cbor(_argN);
-        return oraclize.queryN.value(price)(_timestamp, _datasource, args);
+        return oraclize.queryN{value: price}(_timestamp, _datasource, args);
     }
 
     function oraclize_query(uint _timestamp, string memory _datasource, bytes[] memory _argN, uint _gasLimit) oraclizeAPI internal returns (bytes32 _id) {
@@ -666,7 +667,7 @@ contract usingOraclize {
             return 0; // Unexpectedly high price
         }
         bytes memory args = ba2cbor(_argN);
-        return oraclize.queryN_withGasLimit.value(price)(_timestamp, _datasource, args, _gasLimit);
+        return oraclize.queryN_withGasLimit{value: price}(_timestamp, _datasource, args, _gasLimit);
     }
 
     function oraclize_query(string memory _datasource, bytes[] memory _argN, uint _gasLimit) oraclizeAPI internal returns (bytes32 _id) {
@@ -675,7 +676,7 @@ contract usingOraclize {
             return 0; // Unexpectedly high price
         }
         bytes memory args = ba2cbor(_argN);
-        return oraclize.queryN_withGasLimit.value(price)(0, _datasource, args, _gasLimit);
+        return oraclize.queryN_withGasLimit{value: price}(0, _datasource, args, _gasLimit);
     }
 
     function oraclize_query(string memory _datasource, bytes[1] memory _args) oraclizeAPI internal returns (bytes32 _id) {
