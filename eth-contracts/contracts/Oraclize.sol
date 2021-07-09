@@ -319,7 +319,7 @@ contract usingOraclize {
         _;
     }
 
-    function oraclize_setNetwork(uint8 _networkID) internal returns (bool _networkSet) {
+    function oraclize_setNetwork(uint8) internal returns (bool _networkSet) {
       return oraclize_setNetwork();
     }
 
@@ -367,11 +367,11 @@ contract usingOraclize {
         return false;
     }
 
-    function __callback(bytes32 _myid, string memory _result) public {
+    function __callback(bytes32 _myid, string memory _result) public pure {
         __callback(_myid, _result, new bytes(0));
     }
 
-    function __callback(bytes32 _myid, string memory _result, bytes memory _proof) public pure {
+    function __callback(bytes32, string memory, bytes memory) public pure {
       return;
     }
 
@@ -1048,7 +1048,9 @@ contract usingOraclize {
         bytes memory bstr = new bytes(len);
         uint k = len - 1;
         while (_i != 0) {
-            bstr[k--] = bytes1(uint8(48 + _i % 10));
+            unchecked { // k will underflow at the last step
+                bstr[k--] = bytes1(uint8(48 + _i % 10));
+            }
             _i /= 10;
         }
         return string(bstr);
