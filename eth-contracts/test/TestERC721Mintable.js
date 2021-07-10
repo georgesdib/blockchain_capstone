@@ -52,6 +52,8 @@ contract('TestERC721Mintable', accounts => {
     describe('have ownership properties', function () {
         beforeEach(async function () { 
             this.contract = await CapstoneERC721Token.new({from: account_one});
+
+            assert(await this.contract.mint(account_two, 1, {from: account_one}), "Failed to mint token two");
         })
 
         it('should fail when minting when address is not contract owner', async function () { 
@@ -62,6 +64,21 @@ contract('TestERC721Mintable', accounts => {
                 should_fail = true;
             }
             assert(should_fail, "Only the owner can mint tokens");
+        })
+
+        it('should fail if not approved to transfer', async function () { 
+            let should_fail = false;
+            try {
+                await this.contract.safeTransferFrom(account_two, account_three, 1, {from: account_three});
+            } catch (e) {
+                should_fail = true;
+            }
+            assert(should_fail, "Need to be approved to transfer");
+
+            await this.contract.approve(account_three, 1, {from: account_one});
+            await this.contract.safeTransferFrom(account_two, account_three, 1, {from: account_three});
+            let new_owner = await this.contract.ownerOf(1);
+            assert.equal(new_owner, account_three, "Transfer did not work");
         })
 
         it('should return contract owner', async function () { 
