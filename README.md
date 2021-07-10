@@ -38,6 +38,22 @@ Deploying the contract is also done like for any truffle project:
 
 Please note you need to navigate to eth-contracts before you run the above commands
 
+# Rinkeby network
+To connect and deploy the contract to Rinkeby, please do the follow (from eth-contracts):
+
+`truffle console --network rinkeby`
+`compile`
+`migrate`
+
+This will deploy the contracts on the Rinkeby network, please find the contract addresses below:
+
+| Contract Name       | Contract Address                           |
+| ------------------- | ------------------------------------------ |
+| Migrations          | 0x619Cf31B40e68c254A6eEFACb5FBcA16dCDF79B9 |
+| CapstoneERC721Token | 0x25080e997A1C6dF834e1649b9cb7b63DcD5fFe64 |
+| Verifier            | 0x0197571E9e521E3D05edFbC7B9cB397bF2c39061 |
+| SolnSquareVerifier  | 0x066E7E86E0C9029B9cFfDf7e5b84AEe435f808A1 |
+
 # Project Resources
 
 * [Remix - Solidity IDE](https://remix.ethereum.org/)

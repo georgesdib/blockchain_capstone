@@ -9,3 +9,4 @@ zokrates/code/square/verifier.sol
 zokrates/code/square/witness
 node_modules
 build
+eth-contracts/.secret
