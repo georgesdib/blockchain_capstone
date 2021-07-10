@@ -14,3 +14,8 @@ The capstone will build upon the knowledge you have gained in the course in orde
 * [Interactive zero knowledge 3-colorability demonstration](http://web.mit.edu/~ezyang/Public/graph/svg.html)
 * [Docker](https://docs.docker.com/install/)
 * [ZoKrates](https://github.com/Zokrates/ZoKrates)
+
+# Projection commentary
+I have used openzeppelin for the ERC721 related boilerplate code.
+
+Please note that ERC721Metadata was merged into ERC721 in the latest versions of OpenZeppelin, I am therefore removing it in my code.

@@ -75,14 +75,14 @@ contract('TestERC721Mintable', accounts => {
             }
             assert(should_fail, "Need to be approved to transfer");
 
-            await this.contract.approve(account_three, 1, {from: account_one});
+            await this.contract.approve(account_three, 1, {from: account_one}); // Sent from contract owner
             await this.contract.safeTransferFrom(account_two, account_three, 1, {from: account_three});
             let new_owner = await this.contract.ownerOf(1);
             assert.equal(new_owner, account_three, "Transfer did not work");
         })
 
         it('should return contract owner', async function () { 
-            let owner = await this.contract.getOwner();
+            let owner = await this.contract.owner();
             assert.equal(owner, account_one, "This is not the contract owner");
         })
 
