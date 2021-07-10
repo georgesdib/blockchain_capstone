@@ -10,7 +10,6 @@ contract('TestERC721Mintable', accounts => {
         beforeEach(async function () { 
             this.contract = await CapstoneERC721Token.new({from: account_one});
 
-            // TODO: mint multiple tokens
             assert(await this.contract.mint(account_one, 0, {from: account_one}), "Failed to mint token one");
             assert(await this.contract.mint(account_two, 1, {from: account_one}), "Failed to mint token two");
             assert(await this.contract.mint(account_two, 2, {from: account_one}), "Failed to mint token two");
