@@ -63,9 +63,13 @@ contract CapstoneERC721Token is ERC721Enumerable, Ownable, Pausable, usingOracli
      * @return boolean to indicate success
      */
     function mint(address to, uint256 tokenId) public onlyOwner returns(bool) {
+        _mint(to, tokenId);
+        return true;
+    }
+
+    function _mint(address to, uint256 tokenId) internal override {
         super._mint(to, tokenId);
         setTokenURI(tokenId);
-        return true;
     }
 }
 

@@ -19,7 +19,7 @@ contract('TestERC721Mintable', accounts => {
 
         it('should return total supply', async function () { 
             let nb_tokens = await this.contract.totalSupply();
-            assert.equal(nb_tokens.toNumber(), 4, "There are 2 tokens minted");
+            assert.equal(nb_tokens.toNumber(), 4, "There are 4 tokens minted");
         })
 
         it('should get token balance', async function () { 
