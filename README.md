@@ -107,3 +107,6 @@ This will deploy the contracts on the Rinkeby network, please find the contract 
 I have used openzeppelin for the ERC721 related boilerplate code. I have also implemented my own code under ERC721MintableNoOpenZeppelin.sol, but I don't actually use it.
 
 Please note that ERC721Metadata was merged into ERC721 in the latest versions of OpenZeppelin, I am therefore removing it in my code.
+
+# Contract ABI
+You can find the contact ABI under client/SRC/contracts/SolnSquareVerifier.json
