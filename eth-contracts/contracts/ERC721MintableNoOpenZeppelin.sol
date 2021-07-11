@@ -462,23 +462,23 @@ contract ERC721Metadata is ERC721Enumerable, usingOraclize {
      */
 
 
-    constructor (string memory name, string memory symbol, string memory baseTokenURI) {
-        _name = name;
-        _symbol = symbol;
-        _baseTokenURI = baseTokenURI;
+    constructor (string memory name_, string memory symbol_, string memory baseTokenURI_) {
+        _name = name_;
+        _symbol = symbol_;
+        _baseTokenURI = baseTokenURI_;
 
         _registerInterface(_INTERFACE_ID_ERC721_METADATA);
     }
 
-    function getName() internal view returns(string memory) {
+    function name() internal view returns(string memory) {
         return _name;
     }
 
-    function getSymbol() internal view returns(string memory) {
+    function symbol() internal view returns(string memory) {
         return _symbol;
     }
 
-    function getBaseTokenURI() internal view returns(string memory) {
+    function baseTokenURI() internal view returns(string memory) {
         return _baseTokenURI;
     }
 
